@@ -19,6 +19,13 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   password: { type: String, required: true },
+  verified:{
+    type:Boolean,
+    default:false
+  },
+  verStr:{
+    type:String,
+  },
   role: {
     type: String,
     required: true,

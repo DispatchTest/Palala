@@ -6,11 +6,11 @@ exports.getAllTransactions = async (req, res, next) => {
   if (transactions.length === 0) {
     res.json({
       success: true,
-      item:transactions,
+      item: transactions,
       message: `No data found`,
     });
   } else {
-    res.json({
+    res.status(200).json({
       success: true,
       count: transactions.length,
       item: transactions,
@@ -21,13 +21,17 @@ exports.getAllTransactions = async (req, res, next) => {
 exports.getTransaction = async (req, res, next) => {
   const transaction = await Transaction.findById(req.params.id);
 
-  if (!transaction) {
-    res.json({
-      success: true,
-      messages: `No data found`,
-    });
+  if (transaction.length === 0) {
+    if (!transaction) {
+      res.status(400).json({
+        success: false,
+        error: new ErrorResponse(
+          `Transaction with id of${req.params.id} not found`
+        ),
+      });
+    }
   } else {
-    res.json({
+    res.status(200).json({
       success: true,
       data: transaction,
     });
@@ -35,45 +39,45 @@ exports.getTransaction = async (req, res, next) => {
 };
 
 exports.createTransaction = async (req, res, next) => {
- 
-      const transaction = await Transaction.create(req.body);
+  const transaction = await Transaction.create(req.body);
+  if (!transaction) {
+    res.status(400).json({
+      success: false,
+      message: new ErrorResponse(`Transaction not created`),
+    });
+    return next(new ErrorResponse(`Transaction not created`), 404);
+  } else {
+    res.status(200).json({
+      success: true,
+      data: transaction,
+    });
+  }
+};
 
-      if (!transaction) {
-        res.json({
-          success: true,
-          messages:`Kindly check the entries`
-        });
-      } else {
-        res.json({
-          success: true,
-          data: transaction,
-        });
-      }
+exports.updateTransaction = async (req, res, next) => {
+  const transaction = await Transaction.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    {
+      new: true,
+      runValidators: true,
     }
+  );
 
-
-exports.updateTransaction =  async(req, res, next) => {
-
-      const transaction = await Transaction.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-        runValidators: true,
+  //Only Trans Status and Trans Resolve would be updated
+  if (transaction.length === 0) {
+    if (!transaction) {
+      res.status(400).json({
+        success: false,
+        error: new ErrorResponse(
+          `Transaction with id of${req.params.id} not found`
+        ),
       });
-
-      //Only Trans Status and Trans Resolve would be updated
-      if (transaction.length === 0) {
-        res.json({
-          success: true,
-          messages: `No data found`,
-        });
-      } else {
-        res.json({
-          success: true,
-          data: transaction,
-        });
-      }
     }
-
-
-
-
-
+  } else {
+    res.status(200).json({
+      success: true,
+      data: transaction,
+    });
+  }
+};

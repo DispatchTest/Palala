@@ -5,7 +5,7 @@ const router = express.Router();
 const {isAuth} = require('../config/isAuth');
 
 //Controller functions
-const {getUsers,register,login,logOut} = require('../controllers/User');
+const {getUsers,register,login,logOut,verifyUser} = require('../controllers/User');
 
 
 router.route('/')
@@ -17,6 +17,12 @@ router.route('/login')
 
 router.route('/register')
 .post(register);
+
+router.route('/register')
+.post(register);
+
+router.route('/register/verify/')
+.post(verifyUser);
 
 router.route('/logout')
 .post(logOut);

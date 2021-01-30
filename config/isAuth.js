@@ -4,6 +4,9 @@ module.exports={
         if(req.isAuthenticated()){
             return next();
         }
+        else{
+            res.status(401).send(`You are not authorized to access this route`);
+        }
     }
 
 }

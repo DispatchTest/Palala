@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
-const genString = require('../utils/RandomString');
-const mail = require('../utils/mailer');
+const {genString} = require('../utils/RandomString');
+const {mail} = require('../utils/mailer');
 
 exports.getUsers = async(req,res,next)=>{
     const users = await User.find();
@@ -12,6 +12,7 @@ exports.getUsers = async(req,res,next)=>{
       data:users
     })
 }
+
 
 exports.register= async (req, res, next) => {
   const {
@@ -49,7 +50,10 @@ exports.register= async (req, res, next) => {
     User.findOne({ email: email }).then((user) => {
       if (user) {
         errors.push({ message: `Email is already in use.` });
-        console.log(errors);
+        res.status(400).json({
+          success:false,
+          message:errors
+        })
       } else {
         const newUser = new User(req.body);
 
@@ -57,14 +61,17 @@ exports.register= async (req, res, next) => {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
             if (err) throw err;
             newUser.password = hash;
-
+            const verStr = genString(5);
+            newUser.verStr = verStr;
+            mail(email,"User Verification Code",newUser.firstname, `<p style="color:white; font-size:1.2rem">Your user verification code is :</p> <h3 style="color:white; font-size: 3rem;
+            margin: 10px 0px;">${verStr} <h3>`);  
             //Save user
             newUser
               .save()
               .then((user) => {
                 const {email,role} = user;
-                mail(user.email,"User Verification code", `Your user verification code is ${genString(5)}`);
                 res.json({success:true, data:{email,role}});
+                
               })
               .catch((err) => {
                 res.send(err);
@@ -76,6 +83,30 @@ exports.register= async (req, res, next) => {
   }
 };
 
+exports.verifyUser=async(req,res,next)=>{
+  const {verStr,email} = req.body;
+  User.findOne({email:email}).then(user=>{
+    if(user && user.verStr == verStr && user.verified == false){
+      user.verified = true;
+      user.verStr = null;
+      User.findByIdAndUpdate(user.id,user,{
+        new: true,
+        runValidators: true,
+      }).then(user=>{
+        res.json({
+          success:true,
+          data:{email:user.email,role:user.role}
+        })
+      });
+    }
+    else{
+      res.status(400).json({
+        success:false,
+        message: "User verification failed"
+      })
+    }
+  })
+}
 exports.login= async (req, res, next) => {
   passport.authenticate("local", {
     successRedirect: "/",

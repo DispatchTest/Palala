@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const TransactionSchema = new mongoose.Schema({
     transID:{
         type:String,
-        required:true
+        required:true,
+        unique: true,
     },
     userID:{
         type:String,

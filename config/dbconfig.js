@@ -5,7 +5,8 @@ const connectDB = async()=>{
         {
         useNewUrlParser:true,
         useUnifiedTopology:true,
-        useCreateIndex:true
+        useCreateIndex:true,
+        useFindAndModify:false
     });
 
     console.log(`MongoDB connected on Port: ${connect.connection.host}`.bgYellow.black);

@@ -9,6 +9,7 @@ const connectDB = require("./config/dbconfig");
 const {isAuth} = require('./config/isAuth');
 const path = require('path');
 
+
 //Route files
 const users = require('./routes/User');
 const products = require('./routes/Product');
@@ -64,5 +65,5 @@ const PORT = process.env.PORT || 5100;
 const server = app.listen(PORT,console.log(`Server running on Port:${PORT.bgGreen}`.bgCyan.black));
 
 process.on('unhandledRejection',(err,promise)=>{
-    console.log(`Error: ${err}`.black.bgRed);
+    console.log(`${err}`.black.bgRed);
 });
