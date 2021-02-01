@@ -107,6 +107,7 @@ exports.verifyUser=async(req,res,next)=>{
     }
   })
 }
+
 exports.login= async (req, res, next) => {
   passport.authenticate("local", {
     successRedirect: "/",
