@@ -7,7 +7,7 @@ const {getAllProducts,createProduct,getProduct,updateProduct,deleteProduct,searc
 
 router.route('/')
 .get(getAllProducts)
-.post(isAuth,createProduct);
+.post(createProduct);
 
 router.route('/:id')
 .get(getProduct)

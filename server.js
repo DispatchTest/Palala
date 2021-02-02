@@ -1,14 +1,15 @@
 const express = require('express');
-const app = express();
 const dotenv = require('dotenv');
 const colors = require('colors');
 const morgan = require('morgan');
 const passport = require('passport');
 const session = require('express-session');
 const connectDB = require("./config/dbconfig");
-const {isAuth} = require('./config/isAuth');
+const cors = require('cors'); 
 const path = require('path');
 
+const app = express();
+app.use(cors());
 
 //Route files
 const users = require('./routes/User');

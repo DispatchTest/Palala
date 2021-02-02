@@ -15,71 +15,79 @@ exports.getUsers = async(req,res,next)=>{
 
 
 exports.register= async (req, res, next) => {
-  const {
-    email,
-    password,
-    password2,
-    role
-  } = req.body;
-  let errors = [];
-  if (
-    !email ||
-    !password ||
-    !password2 ||
-    !role 
-  ) {
-    errors.push({ message: "Kindly fill in the required fields" });
-    console.log(errors);
+  if(Object.keys(req.body).length === 0){
+    res.status(400).json({
+      success:false,
+      message:"Kindly fill all require Fields"
+    });
   }
-
-  if (password.length < 5) {
-    errors.push({ message: `Password should be more than 5 characters` });
-  }
-  if (password !== password2) {
-    errors.push({ message: "Passwords do not match" });
-  }
-
-  if (errors.length > 0) {
-    res.json({
-      errors,
+  else{
+    const {
       email,
       password,
-      password2
-    });
-  } else {
-    User.findOne({ email: email }).then((user) => {
-      if (user) {
-        errors.push({ message: `Email is already in use.` });
-        res.status(400).json({
-          success:false,
-          message:errors
-        })
-      } else {
-        const newUser = new User(req.body);
-
-        bcrypt.genSalt(10, (err, salt) =>
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            const verStr = genString(5);
-            newUser.verStr = verStr;
-            mail(email,"User Verification Code",newUser.firstname, `<p style="color:white; font-size:1.2rem">Your user verification code is :</p> <h3 style="color:white; font-size: 3rem;
-            margin: 10px 0px;">${verStr} <h3>`);  
-            //Save user
-            newUser
-              .save()
-              .then((user) => {
-                const {email,role} = user;
-                res.json({success:true, data:{email,role}});
-                
-              })
-              .catch((err) => {
-                res.send(err);
-              });
+      password2,
+      role
+    } = req.body;
+    let errors = [];
+    if (
+      !email ||
+      !password ||
+      !password2 ||
+      !role 
+    ) {
+      errors.push({ message: "Kindly fill in the required fields" });
+      console.log(errors);
+    }
+  
+    if (password.length < 5) {
+      errors.push({ message: `Password should be more than 5 characters` });
+    }
+    if (password !== password2) {
+      errors.push({ message: "Passwords do not match" });
+    }
+  
+    if (errors.length > 0) {
+      res.json({
+        errors,
+        email,
+        password,
+        password2
+      });
+    } else {
+      User.findOne({ email: email }).then((user) => {
+        if (user) {
+          errors.push({ message: `Email is already in use.` });
+          res.status(400).json({
+            success:false,
+            message:errors
           })
-        );
-      }
-    });
+        } else {
+          const newUser = new User(req.body);
+  
+          bcrypt.genSalt(10, (err, salt) =>
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+              newUser.password = hash;
+              const verStr = genString(5);
+              newUser.verStr = verStr;
+              mail(email,"User Verification Code",newUser.firstname, `<p style="color:white; font-size:1.2rem">Your user verification code is :</p> <h3 style="color:white; font-size: 3rem;
+              margin: 10px 0px;">${verStr} <h3>`);  
+              //Save user
+              newUser
+                .save()
+                .then((user) => {
+                  const {email,role} = user;
+                  res.json({success:true, data:{email,role}});
+                  
+                })
+                .catch((err) => {
+                  res.send(err);
+                });
+            })
+          );
+        }
+      });
+    }
   }
 };
 
@@ -109,10 +117,17 @@ exports.verifyUser=async(req,res,next)=>{
 }
 
 exports.login= async (req, res, next) => {
-  passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/",
-  })(req, res, next);
+  if(Object.keys(req.body).length === 0){
+    res.status(400).json({
+      success:false,
+      message:"Kindly fill all require Fields"
+    });
+  }else{
+    passport.authenticate("local", {
+      successRedirect: "/",
+      failureRedirect: "/",
+    })(req, res, next);
+  }
 };
 
 exports.logOut = async (req, res, next) => {

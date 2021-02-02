@@ -37,18 +37,26 @@ exports.getProduct = async (req, res, next) => {
 
 exports.createProduct = async (req, res, next) => {
  
-      const product = await Product.create(req.body);
+  if(Object.keys(req.body).length === 0){
+    res.status(400).json({
+      success:false,
+      message:"Kindly fill all require Fields"
+    });
+  }
+  else{
+    const product = await Product.create(req.body);
 
-      if (!product) {
-        res.status(400).json({
-          success:false,
-          message:new ErrorResponse(`Product not created.`)
-        })
-      } else {
-        res.status(201).json({
-          success: true,
-          data: product,
-        });
+    if (!product) {
+      res.status(400).json({
+        success:false,
+        message:new ErrorResponse(`Product not created.`)
+      })
+    } else {
+      res.status(201).json({
+        success: true,
+        data: product,
+      });
+  }
       }
     }
 
