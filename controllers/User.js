@@ -26,14 +26,12 @@ exports.register= async (req, res, next) => {
       email,
       password,
       password2,
-      role
     } = req.body;
     let errors = [];
     if (
       !email ||
       !password ||
-      !password2 ||
-      !role 
+      !password2 
     ) {
       errors.push({ message: "Kindly fill in the required fields" });
       console.log(errors);
