@@ -15,6 +15,8 @@ exports.getUsers = async(req,res,next)=>{
 
 
 exports.register= async (req, res, next) => {
+
+  //Validate role assignment 
   if(Object.keys(req.body).length === 0){
     res.status(400).json({
       success:false,

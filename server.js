@@ -11,17 +11,18 @@ const path = require('path');
 const app = express();
 app.use(cors());
 
+dotenv.config({
+  path:'./config/config.env'
+});
+
+
 //Route files
 const users = require('./routes/User');
 const products = require('./routes/Product');
 const uploads = require('./routes/Upload');
 const slide = require('./routes/Slide');
 const transactions = require('./routes/Transaction');
-
-
-dotenv.config({
-    path:'./config/config.env'
-});
+const upcloud = require('./routes/Cloudinary');
 
 
 require("./config/passport")(passport);
@@ -29,7 +30,7 @@ require("./config/passport")(passport);
 connectDB();
 
 app.use(express.urlencoded({extended:false}));
-app.use(express.json());
+
 app.use(morgan('dev'));
 
 app.use(
@@ -61,6 +62,10 @@ app.use('/api/v1/slide',slide);
 
 //Route to access uploaded files
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+
+
+//Route to upload to cloudinary
+app.use('/api/v1/cloud',upcloud);
 
 const PORT = process.env.PORT || 5100;
 const server = app.listen(PORT,console.log(`Server running on Port:${PORT.bgGreen}`.bgCyan.black));
