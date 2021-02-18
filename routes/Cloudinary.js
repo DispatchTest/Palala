@@ -8,7 +8,6 @@ const cloudinary = require('cloudinary').v2;
 
 const storage = multer.diskStorage({
     filename(req, file, cb) {
-        console.log(file);
         cb(null, `${Date.now()}` + path.extname(file.originalname));
       },
 });
@@ -31,7 +30,6 @@ router.post('/upcloud', upload.single('image'), async (req,res)=>{
             path:data.secure_url
         })
     }).catch(err=>{
-        
         console.log(err);
         res.status(400).json({
             success:false,
